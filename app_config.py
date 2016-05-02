@@ -12,6 +12,9 @@ from authomatic import Authomatic
 """
 NAMES
 """
+COMPANY_NAME = 'Josh Romero'
+FAVICON_URL = 'http://www.joshromero.com/images/favicon.ico'
+
 # Project name in urls
 # Use dashes, not underscores!
 PROJECT_SLUG = 'dailygraphics'
@@ -21,11 +24,12 @@ ASSETS_SLUG = PROJECT_SLUG
 
 # The name of the repository containing the source
 REPOSITORY_NAME = 'dailygraphics'
-REPOSITORY_URL = 'git@github.com:nprapps/%s.git' % REPOSITORY_NAME
+REPOSITORY_URL = 'git@github.com:joshuarrrr/%s.git' % REPOSITORY_NAME
 REPOSITORY_ALT_URL = None # 'git@bitbucket.org:nprapps/%s.git' % REPOSITORY_NAME'
 
 # Path to the folder containing the graphics
-GRAPHICS_PATH = os.path.abspath('../graphics')
+GRAPHICS_NAME = 'graphics'
+GRAPHICS_PATH = os.path.abspath('../%s' % GRAPHICS_NAME)
 
 # Path to the graphic templates
 TEMPLATES_PATH = os.path.abspath('graphic_templates')
@@ -53,29 +57,43 @@ authomatic = Authomatic(authomatic_config, os.environ.get('AUTHOMATIC_SALT'))
 DEPLOYMENT
 """
 PRODUCTION_S3_BUCKET = {
-    'bucket_name': 'apps.npr.org',
-    'region': 'us-east-1'
+    'bucket_name': 'apps.joshuarrrr',
+    'region': 'us-west-2', 
 }
 
 STAGING_S3_BUCKET = {
-    'bucket_name': 'stage-apps.npr.org',
-    'region': 'us-east-1'
+    'bucket_name': 'stage-apps.joshuarrrr',
+    'region': 'us-west-2', 
 }
 
 ASSETS_S3_BUCKET = {
-    'bucket_name': 'assets.apps.npr.org',
-    'region': 'us-east-1'
+    'bucket_name': 'assets.apps.joshuarrrr',
+    'region': 'us-west-2', 
 }
+
+S3_HOST = 's3-us-west-2.amazonaws.com'
+
+def get_bucket_url(bucket):
+    return 'http://%s.s3-website-%s.amazonaws.com/%s/%s' % (
+        bucket['bucket_name'],
+        bucket['region'],
+        PROJECT_SLUG,
+        GRAPHICS_NAME
+        )
+
+PRODUCTION_S3_URL = get_bucket_url(PRODUCTION_S3_BUCKET)
+STAGING_S3_URL = get_bucket_url(STAGING_S3_BUCKET)
 
 DEFAULT_MAX_AGE = 20
 ASSETS_MAX_AGE = 300
+
 
 """
 ANALYTICS
 """
 
 GOOGLE_ANALYTICS = {
-    'ACCOUNT_ID': 'UA-5828686-75'
+    'ACCOUNT_ID': 'UA-51335839-1'
 }
 
 # These variables will be set at runtime. See configure_targets() below
@@ -97,12 +115,12 @@ def configure_targets(deployment_target):
 
     if deployment_target == 'production':
         S3_BUCKET = PRODUCTION_S3_BUCKET
-        S3_BASE_URL = 'http://%s/%s' % (S3_BUCKET['bucket_name'], PROJECT_SLUG)
+        S3_BASE_URL = PRODUCTION_S3_URL
         S3_DEPLOY_URL = 's3://%s/%s' % (S3_BUCKET['bucket_name'], PROJECT_SLUG)
         DEBUG = False
     elif deployment_target == 'staging':
         S3_BUCKET = STAGING_S3_BUCKET
-        S3_BASE_URL = 'http://%s/%s' % (S3_BUCKET['bucket_name'], PROJECT_SLUG)
+        S3_BASE_URL = STAGING_S3_URL
         S3_DEPLOY_URL = 's3://%s/%s' % (S3_BUCKET['bucket_name'], PROJECT_SLUG)
         DEBUG = True
     else:

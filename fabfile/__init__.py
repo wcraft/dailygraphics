@@ -90,7 +90,7 @@ def deploy_single(slug):
     require('settings', provided_by=[production, staging])
 
     graphic_root = '%s/%s' % (app_config.GRAPHICS_PATH, slug)
-    s3_root = '%s/graphics/%s' % (app_config.PROJECT_SLUG, slug)
+    s3_root = '%s/%s/%s' % (app_config.PROJECT_SLUG, app_config.GRAPHICS_NAME, slug)
     graphic_assets = '%s/assets' % graphic_root
     s3_assets = '%s/assets' % s3_root
 
@@ -135,7 +135,7 @@ def deploy_single(slug):
         )
 
     print ''
-    print '%s URL: %s/graphics/%s/' % (env.settings.capitalize(), app_config.S3_BASE_URL, slug)
+    print '%s URL: %s/%s/' % (env.settings.capitalize(), app_config.S3_BASE_URL, slug)
 
 def download_copy(slug):
     """
@@ -224,7 +224,7 @@ def _check_slug(slug):
         key = bucket.get_key('%s/graphics/%s/child.html' % (app_config.PROJECT_SLUG, slug))
 
         if key:
-            print 'Error: Slug exists on apps.npr.org'
+            print 'Error: Slug exists on %s' % app_config.PRODUCTION_S3_BUCKET['bucket_name']
             return True
     except boto.exception.NoAuthHandlerFound:
         print 'Could not authenticate, skipping Amazon S3 check'
