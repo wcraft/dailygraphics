@@ -12,6 +12,7 @@ from authomatic import Authomatic
 """
 NAMES
 """
+# The name and favicon of your company for titlebars
 COMPANY_NAME = 'Josh Romero'
 FAVICON_URL = 'http://www.joshromero.com/images/favicon.ico'
 
@@ -27,7 +28,7 @@ REPOSITORY_NAME = 'dailygraphics'
 REPOSITORY_URL = 'git@github.com:joshuarrrr/%s.git' % REPOSITORY_NAME
 REPOSITORY_ALT_URL = None # 'git@bitbucket.org:nprapps/%s.git' % REPOSITORY_NAME'
 
-# Path to the folder containing the graphics
+# The name and path to the folder containing the graphics
 GRAPHICS_NAME = 'graphics'
 GRAPHICS_PATH = os.path.abspath('../%s' % GRAPHICS_NAME)
 
@@ -57,18 +58,18 @@ authomatic = Authomatic(authomatic_config, os.environ.get('AUTHOMATIC_SALT'))
 DEPLOYMENT
 """
 PRODUCTION_S3_BUCKET = {
-    'bucket_name': 'apps.joshuarrrr',
-    'region': 'us-west-2', 
+    'bucket_name': 'apps.joshuarrrr', # 'apps.npr.org'
+    'region': 'us-west-2', # 'us.east-1'
 }
 
 STAGING_S3_BUCKET = {
-    'bucket_name': 'stage-apps.joshuarrrr',
-    'region': 'us-west-2', 
+    'bucket_name': 'stage-apps.joshuarrrr', # 'stage-apps.npr.org'
+    'region': 'us-west-2', # 'us.east-1'
 }
 
 ASSETS_S3_BUCKET = {
-    'bucket_name': 'assets.apps.joshuarrrr',
-    'region': 'us-west-2', 
+    'bucket_name': 'assets.apps.joshuarrrr', # 'assets.apps.npr.org'
+    'region': 'us-west-2', # 'us.east-1'
 }
 
 S3_HOST = 's3-us-west-2.amazonaws.com'
@@ -93,7 +94,7 @@ ANALYTICS
 """
 
 GOOGLE_ANALYTICS = {
-    'ACCOUNT_ID': 'UA-51335839-1'
+    'ACCOUNT_ID': 'UA-51335839-1' # 'UA-XXXXXXX-XX'
 }
 
 # These variables will be set at runtime. See configure_targets() below
