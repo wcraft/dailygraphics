@@ -136,7 +136,11 @@
         </div>
 
         <div class="segment">
-            <a id="resize-desktop" class="btn" href="#">Desktop (730px)</a>
+            <a id="resize-desktop-article" class="btn" href="#">Desktop (620px)</a>
+        </div>
+
+        <div class="segment">
+            <a id="resize-desktop-static" class="btn" href="#">Desktop (940px)</a>
         </div>
 
         <div class="segment">
@@ -198,7 +202,8 @@
     <script type="text/javascript">
         var resizeSidebarEl = document.querySelector('#resize-sidebar');
         var resizeMobileEl = document.querySelector('#resize-mobile');
-        var resizeDesktopEl = document.querySelector('#resize-desktop');
+        var resizeArticleEl = document.querySelector('#resize-desktop-article');
+        var resizeStaticEl = document.querySelector('#resize-desktop-static');
         var resizeFluidEl = document.querySelector('#resize-fluid');
         var previewWrapperEl = document.querySelector('#preview-wrapper');
 
@@ -220,13 +225,22 @@
             window.location.hash = 'mobile';
         });
 
-        resizeDesktopEl.addEventListener('click', function(e) {
+        resizeArticleEl.addEventListener('click', function(e) {
             e.preventDefault();
 
-            previewWrapperEl.style.width = '730px';
+            previewWrapperEl.style.width = '620px';
             pymParent.sendWidth();
 
-            window.location.hash = 'desktop';
+            window.location.hash = 'article';
+        });
+
+        resizeStaticEl.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            previewWrapperEl.style.width = '940px';
+            pymParent.sendWidth();
+
+            window.location.hash = 'static';
         });
 
         resizeFluidEl.addEventListener('click', function(e) {
@@ -242,8 +256,10 @@
             previewWrapperEl.style.width = '180px';
         } else if (window.location.hash == '#mobile') {
             previewWrapperEl.style.width = '300px';
-        } else if (window.location.hash == '#desktop') {
-            previewWrapperEl.style.width = '730px';
+        } else if (window.location.hash == '#article') {
+            previewWrapperEl.style.width = '620px';
+        } else if (window.location.hash == '#static') {
+            previewWrapperEl.style.width = '940px';
         } else if (window.location.hash == '#fluid') {
             previewWrapperEl.style.width = '100%';
         }
