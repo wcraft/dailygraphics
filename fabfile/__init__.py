@@ -15,6 +15,8 @@ from glob import glob
 from oauth import get_document, get_credentials
 from time import sleep
 
+import requests
+
 import app_config
 import assets
 import flat
@@ -155,6 +157,35 @@ def download_copy(slug):
 
     copy_path = os.path.join(graphic_path, '%s.xlsx' % slug)
     get_document(graphic_config.COPY_GOOGLE_DOC_KEY, copy_path)
+
+    if hasattr(graphic_config, 'AIRTABLE_ENDPOINTS') and graphic_config.AIRTABLE_ENDPOINTS:
+            for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
+                # print airtable_endpoint
+                copy_path = '%s/%s/%s.json' % (app_config.GRAPHICS_PATH, slug, airtable_endpoint['name'])
+
+                results = []
+                url = airtable_endpoint['url']
+
+                while True:
+                    response = requests.get(url)
+                    response.raise_for_status()
+
+                    data = json.loads(response.text)
+
+                    results = results + data['records']
+
+                    print len(results)
+                    print data.keys();
+
+                    if 'offset' in data:
+                        offset = data['offset']
+                        url = '%s&offset=%s' % (airtable_endpoint['url'], offset)
+                        print offset
+                    else:
+                        break
+
+                with open(copy_path, 'w+') as outfile:
+                    json.dump(results, outfile)
 
 @task
 def update_copy(slug=None):
