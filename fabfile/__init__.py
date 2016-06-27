@@ -155,6 +155,7 @@ def download_copy(slug):
         print 'COPY_GOOGLE_DOC_KEY is not defined in %s/graphic_config.py.' % slug
         return
 
+    print 'downloading google sheet\n%s' % graphic_config.COPY_GOOGLE_DOC_KEY
     copy_path = os.path.join(graphic_path, '%s.xlsx' % slug)
     get_document(graphic_config.COPY_GOOGLE_DOC_KEY, copy_path)
 
@@ -202,9 +203,10 @@ def update_copy(slug=None):
         graphic_path = '%s/%s' % (app_config.GRAPHICS_PATH, slug)
 
         if not os.path.exists('%s/graphic_config.py' % graphic_path):
+            print 'no config found'
             continue
 
-        print slug
+        print 'updating %s copy and data' % slug
         download_copy(slug)
         del sys.modules['graphic_config']
 
