@@ -4,6 +4,9 @@ from mimetypes import guess_type
 import os
 import subprocess
 
+import requests
+import json
+
 from flask import Blueprint, abort, make_response, render_template, render_template_string
 from jinja2 import Environment, FileSystemLoader
 
@@ -45,6 +48,35 @@ def _graphics_detail(slug):
                 oauth.get_document(graphic_config.COPY_GOOGLE_DOC_KEY, copy_path)
 
             context['COPY'] = copytext.Copy(filename=copy_path)
+
+        if hasattr(graphic_config, 'AIRTABLE_ENDPOINTS') and graphic_config.AIRTABLE_ENDPOINTS and request.args.get('refresh'):
+            for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
+                copy_path = '%s/%s.json' % (graphic_path, airtable_endpoint['name'])
+
+                results = []
+                url = airtable_endpoint['url']
+
+                print 'downloading %s' % airtable_endpoint['name']
+
+                while True:
+                    response = requests.get(url)
+                    response.raise_for_status()
+
+                    data = json.loads(response.text)
+
+                    results = results + data['records']
+
+                    if 'offset' in data:
+                        offset = data['offset']
+                        url = '%s&offset=%s' % (airtable_endpoint['url'], offset)
+                    else:
+                        break
+
+                print '%s records found' % len(results)
+
+                with open(copy_path, 'w+') as outfile:
+                    json.dump(results, outfile)
+
     except IOError:
         pass
 
@@ -84,6 +116,21 @@ def _graphics_child(slug):
             copy_path = '%s/%s.xlsx' % (graphic_path, slug)
 
             context['COPY'] = copytext.Copy(filename=copy_path)
+
+        if hasattr(graphic_config, 'AIRTABLE_ENDPOINTS') and graphic_config.AIRTABLE_ENDPOINTS:
+            context['AIRTABLE_DATA'] = []
+
+            results = []
+            for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
+                copy_path = '%s/%s.json' % (graphic_path, airtable_endpoint['name'])
+
+                with open(copy_path) as infile:
+                    results = infile.read()
+
+                context['AIRTABLE_DATA'].append({
+                        'name': airtable_endpoint['name'],
+                        'data': results
+                    })
     except IOError:
         pass
 

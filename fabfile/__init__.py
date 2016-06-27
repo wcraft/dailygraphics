@@ -139,17 +139,11 @@ def deploy_single(slug):
     print ''
     print '%s URL: %s/%s/' % (env.settings.capitalize(), app_config.S3_BASE_URL, slug)
 
-def download_copy(slug):
+def download_google_sheet(slug, graphic_config):
     """
     Downloads a Google Doc as an .xlsx file.
     """
     graphic_path = '%s/%s' % (app_config.GRAPHICS_PATH, slug)
-
-    try:
-        graphic_config = load_graphic_config(graphic_path)
-    except IOError:
-        print '%s/graphic_config.py does not exist.' % slug
-        return
 
     if not hasattr(graphic_config, 'COPY_GOOGLE_DOC_KEY') or not graphic_config.COPY_GOOGLE_DOC_KEY:
         print 'COPY_GOOGLE_DOC_KEY is not defined in %s/graphic_config.py.' % slug
@@ -159,34 +153,52 @@ def download_copy(slug):
     copy_path = os.path.join(graphic_path, '%s.xlsx' % slug)
     get_document(graphic_config.COPY_GOOGLE_DOC_KEY, copy_path)
 
+def download_airtable_sheets(slug, graphic_config):
+    """
+    Downloads airtable sheets as json files.
+    """
     if hasattr(graphic_config, 'AIRTABLE_ENDPOINTS') and graphic_config.AIRTABLE_ENDPOINTS:
-            for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
-                # print airtable_endpoint
-                copy_path = '%s/%s/%s.json' % (app_config.GRAPHICS_PATH, slug, airtable_endpoint['name'])
+        for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
+            # print airtable_endpoint
+            copy_path = '%s/%s/%s.json' % (app_config.GRAPHICS_PATH, slug, airtable_endpoint['name'])
 
-                results = []
-                url = airtable_endpoint['url']
+            results = []
+            url = airtable_endpoint['url']
 
-                while True:
-                    response = requests.get(url)
-                    response.raise_for_status()
+            print 'downloading airtable sheet "%s"' % airtable_endpoint['name']
 
-                    data = json.loads(response.text)
+            while True:
+                response = requests.get(url)
+                response.raise_for_status()
 
-                    results = results + data['records']
+                data = json.loads(response.text)
 
-                    print len(results)
-                    print data.keys();
+                results = results + data['records']
 
-                    if 'offset' in data:
-                        offset = data['offset']
-                        url = '%s&offset=%s' % (airtable_endpoint['url'], offset)
-                        print offset
-                    else:
-                        break
+                if 'offset' in data:
+                    offset = data['offset']
+                    url = '%s&offset=%s' % (airtable_endpoint['url'], offset)
+                else:
+                    break
 
-                with open(copy_path, 'w+') as outfile:
-                    json.dump(results, outfile)
+            print '%s records found' % len(results)
+
+            with open(copy_path, 'w+') as outfile:
+                json.dump(results, outfile)
+
+def download_copy(slug):
+    """
+    Downloads cloud data.
+    """
+    graphic_path = '%s/%s' % (app_config.GRAPHICS_PATH, slug)
+    try:
+        graphic_config = load_graphic_config(graphic_path)
+    except (ImportError, IOError):
+        print '%s/graphic_config.py does not exist.' % slug
+        return
+
+    download_google_sheet(slug, graphic_config)
+    download_airtable_sheets(slug, graphic_config)
 
 @task
 def update_copy(slug=None):

@@ -12,6 +12,8 @@ from jinja2 import Environment, FileSystemLoader
 import app_config
 import copytext
 import oauth
+import requests
+import json
 from render_utils import load_graphic_config, make_context, render_with_context, smarty_filter
 
 graphic_templates = Blueprint('graphic_templates', __name__)
@@ -42,6 +44,35 @@ def _templates_detail(slug):
                 oauth.get_document(graphic_config.COPY_GOOGLE_DOC_KEY, copy_path)
 
             context['COPY'] = copytext.Copy(filename=copy_path)
+
+        if hasattr(graphic_config, 'AIRTABLE_ENDPOINTS') and graphic_config.AIRTABLE_ENDPOINTS and request.args.get('refresh'):
+            for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
+                copy_path = '%s/%s.json' % (template_path, airtable_endpoint['name'])
+
+                results = []
+                url = airtable_endpoint['url']
+
+                print 'downloading %s' % airtable_endpoint['name']
+
+                while True:
+                    response = requests.get(url)
+                    response.raise_for_status()
+
+                    data = json.loads(response.text)
+
+                    results = results + data['records']
+
+                    if 'offset' in data:
+                        offset = data['offset']
+                        url = '%s&offset=%s' % (airtable_endpoint['url'], offset)
+                    else:
+                        break
+
+                print '%s records found' % len(results)
+
+                with open(copy_path, 'w+') as outfile:
+                    json.dump(results, outfile)
+
     except IOError:
         pass
 
@@ -80,6 +111,20 @@ def _templates_child(slug):
             copy_path = '%s/%s.xlsx' % (template_path, slug)
 
             context['COPY'] = copytext.Copy(filename=copy_path)
+        if hasattr(graphic_config, 'AIRTABLE_ENDPOINTS') and graphic_config.AIRTABLE_ENDPOINTS:
+            context['AIRTABLE_DATA'] = []
+
+            results = []
+            for airtable_endpoint in graphic_config.AIRTABLE_ENDPOINTS:
+                copy_path = '%s/%s.json' % (template_path, airtable_endpoint['name'])
+
+                with open(copy_path) as infile:
+                    results = infile.read()
+
+                context['AIRTABLE_DATA'].append({
+                        'name': airtable_endpoint['name'],
+                        'data': results
+                    })
     except IOError:
         pass
 
