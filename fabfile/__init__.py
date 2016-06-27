@@ -206,6 +206,7 @@ def update_copy(slug=None):
 
         print slug
         download_copy(slug)
+        del sys.modules['graphic_config']
 
 
 """
