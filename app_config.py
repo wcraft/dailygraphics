@@ -75,15 +75,15 @@ ASSETS_S3_BUCKET = {
 S3_HOST = 's3-us-west-2.amazonaws.com'
 
 def get_bucket_url(bucket):
-    return 'http://%s.s3-website-%s.amazonaws.com/%s/%s' % (
+    return 'http://%s.s3-website-%s.amazonaws.com/%s' % (
         bucket['bucket_name'],
         bucket['region'],
-        PROJECT_SLUG,
-        GRAPHICS_NAME
+        PROJECT_SLUG
         )
 
-PRODUCTION_S3_URL = get_bucket_url(PRODUCTION_S3_BUCKET)
-STAGING_S3_URL = get_bucket_url(STAGING_S3_BUCKET)
+PRODUCTION_S3_URL = get_bucket_url(PRODUCTION_S3_BUCKET) + '/%s' % GRAPHICS_NAME
+STAGING_S3_URL = get_bucket_url(STAGING_S3_BUCKET) + '/%s' % GRAPHICS_NAME
+ASSETS_S3_URL = get_bucket_url(ASSETS_S3_BUCKET)
 
 DEFAULT_MAX_AGE = 20
 ASSETS_MAX_AGE = 300
