@@ -53,3 +53,5 @@ www/graphics/*/child.html
 daily-graphics.sublime-*
 graphic_templates/**/*.xlsx
 graphic_templates/_basec
+
+*.sublime-workspace
