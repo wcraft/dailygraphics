@@ -30,7 +30,7 @@ REPOSITORY_ALT_URL = None # 'git@bitbucket.org:nprapps/%s.git' % REPOSITORY_NAME
 
 # The name and path to the folder containing the graphics
 GRAPHICS_NAME = 'graphics'
-GRAPHICS_PATH = os.path.abspath('../%s' % GRAPHICS_NAME)
+GRAPHICS_PATH = '/Users/wcraft/Code/dailygraphics/graphics' #os.path.abspath('../%s' % GRAPHICS_NAME)
 
 # Path to the graphic templates
 TEMPLATES_PATH = os.path.abspath('graphic_templates')
@@ -58,21 +58,21 @@ authomatic = Authomatic(authomatic_config, os.environ.get('AUTHOMATIC_SALT'))
 DEPLOYMENT
 """
 PRODUCTION_S3_BUCKET = {
-    'bucket_name':  # 'apps.npr.org'
-    'region':  # 'us.east-1'
+    'bucket_name': '', # 'apps.npr.org'
+    'region': '' # 'us.east-1'
 }
 
 STAGING_S3_BUCKET = {
-    'bucket_name':  # 'stage-apps.npr.org'
-    'region':  # 'us.east-1'
+    'bucket_name': '', # 'stage-apps.npr.org'
+    'region': '' # 'us.east-1'
 }
 
 ASSETS_S3_BUCKET = {
-    'bucket_name':  # 'assets.apps.npr.org'
-    'region':  # 'us.east-1'
+    'bucket_name': '',  # 'assets.apps.npr.org'
+    'region': '' # 'us.east-1'
 }
 
-S3_HOST =
+S3_HOST = ''
 
 def get_bucket_url(bucket):
     return 'http://%s.s3-website-%s.amazonaws.com/%s' % (
@@ -81,9 +81,9 @@ def get_bucket_url(bucket):
         PROJECT_SLUG
         )
 
-PRODUCTION_S3_URL = get_bucket_url(PRODUCTION_S3_BUCKET) + '/%s' % GRAPHICS_NAME
-STAGING_S3_URL = get_bucket_url(STAGING_S3_BUCKET) + '/%s' % GRAPHICS_NAME
-ASSETS_S3_URL = get_bucket_url(ASSETS_S3_BUCKET)
+#PRODUCTION_S3_URL = get_bucket_url(PRODUCTION_S3_BUCKET) + '/%s' % GRAPHICS_NAME
+#STAGING_S3_URL = get_bucket_url(STAGING_S3_BUCKET) + '/%s' % GRAPHICS_NAME
+#ASSETS_S3_URL = get_bucket_url(ASSETS_S3_BUCKET)
 
 DEFAULT_MAX_AGE = 20
 ASSETS_MAX_AGE = 300
@@ -94,7 +94,7 @@ ANALYTICS
 """
 
 GOOGLE_ANALYTICS = {
-    'ACCOUNT_ID':  # 'UA-XXXXXXX-XX'
+    'ACCOUNT_ID': '' # 'UA-XXXXXXX-XX'
 }
 
 # These variables will be set at runtime. See configure_targets() below
